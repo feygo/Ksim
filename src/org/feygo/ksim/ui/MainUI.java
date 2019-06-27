@@ -1,5 +1,7 @@
 package org.feygo.ksim.ui;
 
+import java.net.URL;
+
 import org.feygo.ksim.conf.ConfLoader;
 import org.feygo.ksim.conf.SimBoardConf;
 import org.feygo.ksim.tools.AAL;
@@ -25,6 +27,7 @@ public class MainUI extends BorderPane {
 	public void showSimBoard(SimBoardConf conf) {
 		//simboard
 		SimBoard simboard=new SimBoard(conf);
+		simboard.prefWidthProperty().bind(this.widthProperty());
 		this.setCenter(simboard);
 	}
 	
@@ -37,8 +40,10 @@ public class MainUI extends BorderPane {
 		loadConfButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				String filePath="C:\\1.dev\\workspace\\Simboard\\conf\\SimboardConf.json";
-				SimBoardConf conf=ConfLoader.getSimConfByFile(filePath);
+				//String filePath="C:\\1.dev\\git-repository\\Ksim\\conf\\SimboardConf.json";
+				URL confUrl=this.getClass().getClassLoader().getResource("conf/SimboardConf.json");
+				AAL.a("‘ÿ»ÎSimboard≈‰÷√Œƒº˛£∫"+confUrl.toExternalForm());
+				SimBoardConf conf=ConfLoader.getSimConfByFile(confUrl);
 				AAL.a(conf.toString());
 				showSimBoard(conf);
 			}

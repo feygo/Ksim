@@ -1,0 +1,12 @@
+#MainUI
+{
+	-fx-background-color:  #f5f5dc;
+}
+
+.SimTitleCSS
+{
+	-fx-background-color:  #eee8aa;
+	-fx-border-color:#708090;
+	-fx-border-width: 1;
+
+}

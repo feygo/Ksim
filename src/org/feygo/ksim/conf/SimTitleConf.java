@@ -1,7 +1,12 @@
 package org.feygo.ksim.conf;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
+/**
+ * @author Feygo
+ * 限定看板两层
+ */
 public class SimTitleConf {
 
 	private String id;

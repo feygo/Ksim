@@ -12,11 +12,17 @@
 		{"id":"done"}
 	],
 	"Cols":{
+		"backlog":{
+			title:"任务池"
+		},
 		"backlog-0":{
 			title:"史诗"
 		},
 		"backlog-1":{
 			title:"故事"
+		},
+		"req":{
+			title:"需求"
 		},
 		"req-0":{
 			title:"需求分析"
@@ -25,7 +31,8 @@
 			title:"分析完成"
 		},	
 		"dev":{
-			title:"开发"
+			title:"开发" ,
+			wip:3
 		},
 		"test":{
 			title:"测试"
