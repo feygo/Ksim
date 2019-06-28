@@ -1,0 +1,44 @@
+{
+	"name":"test",
+	"Flow":{
+		"normal":["backlog-0","backlog-1","req-0","req-1","dev","test","done"],
+		"bug":["dev","test","done"]
+	},
+	"Layout":[
+		{"id":"backlog",sub:[{"id":"backlog-0"},{"id":"backlog-1"}]},
+		{"id":"req",sub:[{"id":"req-0"},{"id":"req-1"}]},
+		{"id":"dev"},
+		{"id":"test"},
+		{"id":"done"}
+	],
+	"Cols":{
+		"backlog":{
+			title:"任务池"
+		},
+		"backlog-0":{
+			title:"史诗"
+		},
+		"backlog-1":{
+			title:"故事"
+		},
+		"req":{
+			title:"需求"
+		},
+		"req-0":{
+			title:"需求分析"
+		},
+		"req-1":{
+			title:"分析完成"
+		},	
+		"dev":{
+			title:"开发" ,
+			wip:3
+		},
+		"test":{
+			title:"测试"
+		},
+		"done":{
+			title:"完成"
+		}	
+	}
+}

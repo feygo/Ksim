@@ -17,8 +17,11 @@ public class SimBoardConf {
 	private Map<String,SimColConf> Cols;
 	
 	/** 非配置变量 **/
-	private Map<String, int[]> LayoutTier;
+	private List<String[]> LayoutTier;
 	private int[] LayoutMatrix;
+	private String FirstColId;
+	private String LastColId;
+	private HashMap<String, ArrayList<String>> FlowColList;
 	
 	public String getName() {
 		return name;
@@ -45,11 +48,17 @@ public class SimBoardConf {
 		Cols = cols;
 	}
 	
-	public Map<String, int[]> getLayoutTier() {
+	public List<String[]> getLayoutTier() {
 		return LayoutTier;
 	}
 	public int[] getLayoutMatrix() {
 		return LayoutMatrix;
+	}
+	public String getFirstColId() {
+		return FirstColId;
+	}
+	public String getLastColId() {
+		return LastColId;
 	}
 	@Override
 	public String toString() {
@@ -86,7 +95,11 @@ public class SimBoardConf {
 		freshLayoutMatrix();
 		// 计算看板布局层级
 		freshLayoutTier();
-		
+		// 计算左右侧的第一列
+		freshFirstColId();
+		freshLastColId();
+		// 计算col的流转过程
+		freshFlowMap();
 	}
 	/**
 	 * [tier,cols]
@@ -110,7 +123,7 @@ public class SimBoardConf {
 	
 	private void freshLayoutTier() {
 		// 起始位置 ，行，列，行跨度，列跨度，
-		Map<String,int[]> Tier=new HashMap<String,int[]>();
+		List<String[]> Tier=new ArrayList<String[]>();
 		// 检查是否二层看板
 		int TierCnt=LayoutMatrix[0];
 		int pIndex=0;
@@ -122,18 +135,16 @@ public class SimBoardConf {
 			// 设置第二层看板
 			if(sList==null||sList.isEmpty()) {
 				// 一层看板
-				layout=new int[] { pIndex,1,1,2,1};
-				Tier.put(pConf.getId(), layout);
+				//layout=new int[] { pIndex,1,1,2,1};
+				Tier.add(new String[]{pConf.getId(), String.valueOf(pIndex),"1","1","2","1"});
 				pIndex=pIndex+1;
 			}else {
 				// 一层看板 一层头
-				layout=new int[] { pIndex,1,sList.size(),1,0};
-				Tier.put(pConf.getId(), layout);
+				Tier.add(new String[]{pConf.getId(), String.valueOf(pIndex),"1",String.valueOf(sList.size()),"1","0"});
 				// 二层看板
 				for(int sIndex=0;sIndex<sList.size();sIndex++) {
 					SimTitleConf sConf=sList.get(sIndex);
-					int[] layout2=new int[] { pIndex+sIndex,2,1,1,1};
-					Tier.put(sConf.getId(), layout2);
+					Tier.add(new String[]{sConf.getId(), String.valueOf(pIndex+sIndex),"2","1","1","1"});
 				}
 				pIndex=pIndex+sList.size();
 			}
@@ -150,7 +161,55 @@ public class SimBoardConf {
 			}
 		});
 	}
+	private void freshFirstColId() {
+		String firstId;
+		SimTitleConf fConf=Layout.get(0);
+		ArrayList<SimTitleConf> sub=fConf.getSub();
+		if(sub!=null&&!sub.isEmpty()) {
+			firstId=sub.get(0).getId();
+		}else {
+			firstId=fConf.getId();
+		}
+		AAL.a("更新左侧第一SimCol："+firstId);
+		FirstColId=firstId;
+	}
+	private void freshLastColId(){
+		String lastId;
+		SimTitleConf conf=Layout.get(Layout.size()-1);
+		ArrayList<SimTitleConf> sub=conf.getSub();
+		if(sub!=null&&!sub.isEmpty()) {
+			lastId=sub.get(sub.size()-1).getId();
+		}else {
+			lastId=conf.getId();
+		}
+		AAL.a("更新右侧第一SimCol："+lastId);
+		LastColId=lastId;
+	}
+	private void freshFlowMap() {
+		//Map<String,ArrayList<String>> Flow
+		FlowColList=new HashMap<String, ArrayList<String>>();
+		Flow.forEach(new BiConsumer<String, ArrayList<String>>() {
+			@Override
+			public void accept(String flowId, ArrayList<String> flowList) {
+				for(int i=1;i<flowList.size();i++) {
+					String colId=flowList.get(i);
+					String preColId=flowList.get(i-1);
+					ArrayList<String> list=FlowColList.get(colId);
+					if(list==null) {
+						list=new ArrayList<String>() ;
+					}
+					list.add(preColId+"@"+flowId);
+					FlowColList.put(colId, list);
+				}				
+			}			
+		});
+		
+		AAL.a("更新FlowColMap："+FlowColList);
+	}
 	
+	public ArrayList<String> getFlowPreCol(String colId) {
+		return FlowColList.get(colId);
+	}
 	
 	
 }
