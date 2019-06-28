@@ -12,6 +12,8 @@ import java.util.function.Consumer;
 import org.feygo.ksim.conf.SimBoardConf;
 import org.feygo.ksim.conf.SimColConf;
 import org.feygo.ksim.sim.Simulator;
+import org.feygo.ksim.task.TaskBean;
+import org.feygo.ksim.task.TaskFactory;
 import org.feygo.ksim.tools.AAL;
 
 import javafx.collections.ObservableList;
@@ -52,14 +54,18 @@ public class SimCol extends ScrollPane {
 			workDoneList.add(node);
 		}
 		node.intoCol(conf.getId());
+		//执行拆分检查
+		checkDisagg(node);
 	}
 
 	public void removeTaskNode(TaskNodeW2 node) {
-		nodeList.remove(node);
-		workDoneList.remove(node);
+		removeTaskNodeOnly(node);
 		node.outofCol();
 	}
-
+	private void removeTaskNodeOnly(TaskNodeW2 node) {
+		nodeList.remove(node);
+		workDoneList.remove(node);
+	}
 	/**
 	 * * 拉取
 	 */
@@ -165,5 +171,29 @@ public class SimCol extends ScrollPane {
 		});
 	}
 
+	/**
+	 * 根据列的最大est限制 来拆分工作
+	 * @param node
+	 */
+	public void checkDisagg(TaskNodeW2 node) {
+		// 获得最大限额
+		int estMax=conf.getDisaggMax();
+		int est=node.getTaskBean().getEst();
+		//判断是否需要拆解
+		if(est>estMax&&estMax!=0) {
+			TaskFactory tFactory=Simulator.getSim().getTaskFactory();
+			List<TaskBean> dBeanList=tFactory.disaggWorkBean(node.getTaskBean(),estMax);
+			dBeanList.forEach(new Consumer<TaskBean>() {
+				@Override
+				public void accept(TaskBean bean) {
+					bean.setDisaggCol(getId());
+					TaskNodeW2 sNode=tFactory.getNodeByBean(bean);
+					sNode.getStyleClass().add("SubTaskNodeCSS");
+					addTaskNode(sNode);
+				}
+			});
+			removeTaskNodeOnly(node);
+		}
+	}
 
 }

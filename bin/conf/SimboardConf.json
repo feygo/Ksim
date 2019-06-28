@@ -1,14 +1,14 @@
 {
 	"name":"test",
 	"Flow":{
-		"normal":["backlog-0","backlog-1","req-0","req-1","dev","test","done"],
-		"bug":["dev","test","done"]
+		"normal":["backlog-0","backlog-1","req-0","req-1","dev","preTest","testing","done"],
+		"bug":["dev","preTest","testing","done"]
 	},
 	"Layout":[
 		{"id":"backlog",sub:[{"id":"backlog-0"},{"id":"backlog-1"}]},
 		{"id":"req",sub:[{"id":"req-0"},{"id":"req-1"}]},
 		{"id":"dev"},
-		{"id":"test"},
+		{"id":"test",sub:[{id:"preTest"},{id:"testing"}]},
 		{"id":"done"}
 	],
 	"Cols":{
@@ -20,29 +20,42 @@
 		},
 		"backlog-1":{
 			title:"故事",
-			tp:0.5,
-			batchPull:2
+			tp:1,
+			batchPull:2,
+			disaggMax:8
 		},
 		"req":{
-			title:"需求",
-			tp:0.5
+			title:"需求"
 		},
 		"req-0":{
 			title:"需求分析",
-			tp:0.5
+			tp:1			
 		},
 		"req-1":{
 			title:"分析完成",
-			tp:0.5
+			colType:Queue
 		},	
 		"dev":{
 			title:"开发" ,
 			wip:3,
-			tp:0.5
+			tp:1
 		},
 		"test":{
+			title:"测试"
+		},
+		"preTest":{
+			title:"准备测试",
+			colType:Buffer
+		},
+		"testing":{
 			title:"测试",
-			tp:0.5
+			tp:1
+		},
+		"deploy":{
+			title:"部署",
+			tp:1,
+			batchPull:3,
+			mergeCol:backlog-1
 		},
 		"done":{
 			title:"完成"

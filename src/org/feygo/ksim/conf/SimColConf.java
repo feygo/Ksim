@@ -6,6 +6,25 @@ public class SimColConf {
 	private double tp;
 	private int wip;
 	private int batchPull;
+	
+	// 此列的最大任务项，超过执行拆解
+	private int disaggMax;
+	// 此列中有分解任务，则等待合并
+	private String mergeCol;
+	
+	
+	public int getDisaggMax() {
+		return disaggMax;
+	}
+	public void setDisaggMax(int disaggMax) {
+		this.disaggMax = disaggMax;
+	}
+	public String getMergeCol() {
+		return mergeCol;
+	}
+	public void setMergeCol(String mergeCol) {
+		this.mergeCol = mergeCol;
+	}
 	public String getTitle() {
 		return title;
 	}

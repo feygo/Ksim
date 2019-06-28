@@ -25,3 +25,10 @@
 	-fx-border-width: 1;
 	
 }
+.SubTaskNodeCSS
+{
+	-fx-background-color: #ffdead;
+	-fx-border-color: #00008b;
+	-fx-border-width: 1;
+	
+}

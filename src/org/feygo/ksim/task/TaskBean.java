@@ -7,7 +7,13 @@ public class TaskBean {
 	private String serviceType;
 	private String workType;
 	
-	/****/
+	/** 任务拆解变量 **/	
+	private String pId;
+	private String disaggCol;
+	private int disaggLevel;
+	private int disaggCnt;
+	
+	/** 时间计算变量 **/
 	private String curColId;
 	private int tmpStartTime;
 	private int tmpEndTime;
@@ -43,12 +49,24 @@ public class TaskBean {
 	public String toString() {
 		StringBuffer sBuffer=new StringBuffer();
 		sBuffer.append("[");
-		sBuffer.append(id).append(":").append(est);
+		sBuffer.append(id).append("#").append(est);
 		if(workType!=null) {
 			sBuffer.append("-").append(workType);
 		}
 		if(serviceType!=null) {
 			sBuffer.append("-").append(serviceType);
+		}
+		if(pId!=null) {
+			sBuffer.append(",pId:").append(pId);
+		}
+		if(disaggCol!=null) {
+			sBuffer.append(",disaggCol:").append(disaggCol);
+		}
+		if(disaggLevel!=0) {
+			sBuffer.append(",disaggLevel:").append(disaggLevel);
+		}
+		if(disaggCnt!=0) {
+			sBuffer.append(",disaggCnt:").append(disaggCnt);
 		}
 		sBuffer.append("]");
 		return sBuffer.toString();
@@ -84,6 +102,30 @@ public class TaskBean {
 	}
 	public void setTmpDoneTime(int tmpDoneTime) {
 		this.tmpDoneTime = tmpDoneTime;
+	}
+	public String getpId() {
+		return pId;
+	}
+	public void setpId(String pId) {
+		this.pId = pId;
+	}
+	public String getDisaggCol() {
+		return disaggCol;
+	}
+	public void setDisaggCol(String disaggCol) {
+		this.disaggCol = disaggCol;
+	}
+	public int getDisaggLevel() {
+		return disaggLevel;
+	}
+	public void setDisaggLevel(int disaggLevel) {
+		this.disaggLevel = disaggLevel;
+	}
+	public int getDisaggCnt() {
+		return disaggCnt;
+	}
+	public void setDisaggCnt(int disaggCnt) {
+		this.disaggCnt = disaggCnt;
 	}
 
 	
