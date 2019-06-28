@@ -46,8 +46,8 @@ public class SimBoard extends VBox {
 				gp.add(tLabel, Integer.valueOf(layout[1]).intValue(), Integer.valueOf(layout[2]).intValue(),Integer.valueOf(layout[3]).intValue(),Integer.valueOf(layout[4]).intValue());
 				
 				if(layout[5].equals("1")) {
-					//虚拟列
-					SimCol col=new SimCol(colConf);
+					//占位看板列
+					SimCol col=getSimColByConf(colConf);
 					col.prefWidthProperty().bind(gp.widthProperty().divide(colCnt));
 					gp.add(col, Integer.valueOf(layout[1]).intValue(), tierCnt+1,1,1);
 					Simulator.getSim().addSimCol(col);
@@ -59,8 +59,20 @@ public class SimBoard extends VBox {
 		gp.prefHeightProperty().bind(this.heightProperty().multiply(0.95));
 		this.getChildren().add(gp);
 	}
-
+	
 	private void initTitle() {
 		
+	}
+	public SimCol getSimColByConf(SimColConf conf) {
+		String colType=conf.getColType();
+		SimCol col=null;
+		if("Buffer".equalsIgnoreCase(colType)) {
+			col=new SimBufferCol(conf);
+		}else if("Queue".equalsIgnoreCase(colType)){
+			col=new SimQueueCol(conf);
+		}else {
+			col=new SimCol(conf);
+		}
+		return col;
 	}
 }

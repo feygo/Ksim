@@ -6,6 +6,7 @@ public class SimColConf {
 	private double tp;
 	private int wip;
 	private int batchPull;
+	private String colType;
 	
 	// 此列的最大任务项，超过执行拆解
 	private int disaggMax;
@@ -13,6 +14,12 @@ public class SimColConf {
 	private String mergeCol;
 	
 	
+	public String getColType() {
+		return colType;
+	}
+	public void setColType(String colType) {
+		this.colType = colType;
+	}
 	public int getDisaggMax() {
 		return disaggMax;
 	}
@@ -59,7 +66,10 @@ public class SimColConf {
 	public String toString() {
 		StringBuffer sBuffer=new StringBuffer();
 		sBuffer.append("{");
-		sBuffer.append("title:").append(title);
+		if(colType!=null) {
+			sBuffer.append(colType);
+		}
+		sBuffer.append("col:").append(title);
 		sBuffer.append(" id:").append(id);
 		sBuffer.append(" tp:").append(tp);
 		sBuffer.append(" wip:").append(wip);

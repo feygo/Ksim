@@ -25,9 +25,9 @@ public class SimCol extends ScrollPane {
 
 	private SimColConf conf;
 
-	private ObservableList<Node> nodeList;
+	protected ObservableList<Node> nodeList;
 	
-	private List<TaskNodeW2> workDoneList=new ArrayList<TaskNodeW2>();
+	protected List<TaskNodeW2> workDoneList=new ArrayList<TaskNodeW2>();
 
 	public SimCol(SimColConf conf) {
 		this.conf = conf;
@@ -62,7 +62,7 @@ public class SimCol extends ScrollPane {
 		removeTaskNodeOnly(node);
 		node.outofCol();
 	}
-	private void removeTaskNodeOnly(TaskNodeW2 node) {
+	protected void removeTaskNodeOnly(TaskNodeW2 node) {
 		nodeList.remove(node);
 		workDoneList.remove(node);
 	}
@@ -105,7 +105,6 @@ public class SimCol extends ScrollPane {
 		// 从流程前列中，获得可拉取的备选任务项
 		SimBoardConf bConf = Simulator.getSim().getSimBoard().getSimBoardConf();
 		ArrayList<String> preColIdList = bConf.getFlowPreCol(conf.getId());
-
 		if (preColIdList != null) {
 			List<TaskNodeW2> cList = new ArrayList<TaskNodeW2>();
 			preColIdList.forEach(new Consumer<String>() {
@@ -124,12 +123,12 @@ public class SimCol extends ScrollPane {
 			if(ccList.isEmpty()) {
 				AAL.a("看板列" + conf.getId() + "无可拉取项");				
 			}else if (pullCnt==-1||ccList.size() <= pullCnt) {
-				AAL.a("看板列" + conf.getId() + "准备拉取"+ccList.size() +"|"+pullCnt+"|"+ ccList);
+				AAL.a("看板列" + conf.getId() + "准备拉取 "+pullCnt+"个但拉取"+ccList.size() +"个："+ ccList);
 				Simulator.getSim().moveTaskNode(ccList, this);
 				
 			} else {
 				List<TaskNodeW2> subList=ccList.subList(0, pullCnt);
-				AAL.a("看板列" + conf.getId() + "准备拉取"+pullCnt +"|" + subList);
+				AAL.a("看板列" + conf.getId() + "准备拉取 "+pullCnt +"个从:"+ccList.size()+"中：" + subList);
 				Simulator.getSim().moveTaskNode(subList, this);				
 			}
 		}

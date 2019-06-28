@@ -112,8 +112,10 @@ public class Simulator {
 				}
 				/** 任务项界面移动 **/
 				SimCol preCol=(SimCol)simBoard.lookup("#"+colId);
+				AAL.a("从"+preCol.getId()+"拉取"+taskNode+"到"+simCol.getId());
 				preCol.removeTaskNode(taskNode);
 				simCol.addTaskNode(taskNode);
+				
 			}
 		});
 		

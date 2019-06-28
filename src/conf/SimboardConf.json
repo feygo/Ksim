@@ -32,7 +32,7 @@
 			tp:1			
 		},
 		"req-1":{
-			title:"分析完成",
+			title:"分析完成【队列】",
 			colType:Queue
 		},	
 		"dev":{
@@ -44,21 +44,22 @@
 			title:"测试"
 		},
 		"preTest":{
-			title:"准备测试",
+			title:"准备测试【缓冲】",
 			colType:Buffer
 		},
 		"testing":{
 			title:"测试",
-			tp:1
+			tp:1,
+			batchPull:2
 		},
 		"deploy":{
 			title:"部署",
 			tp:1,
-			batchPull:3,
 			mergeCol:backlog-1
 		},
 		"done":{
-			title:"完成"
+			title:"完成",
+			tp:1
 		}	
 	}
 }
