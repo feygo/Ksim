@@ -26,9 +26,9 @@ public class Scheduler extends ScheduledService<Number>{
 				//设置时钟
 				sim.setCurrentTime(value.intValue());
 				//拉取调度
-				sim.periodPull(value.intValue());
+				sim.periodPull();
 				//工作调度
-				//Simulator.getSim().periodWork(value.intValue());
+				sim.periodWork();
 			}
 			
 		};

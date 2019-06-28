@@ -24,6 +24,8 @@ public class SimCol extends ScrollPane {
 	private SimColConf conf;
 
 	private ObservableList<Node> nodeList;
+	
+	private List<TaskNodeW2> workDoneList=new ArrayList<TaskNodeW2>();
 
 	public SimCol(SimColConf conf) {
 		this.conf = conf;
@@ -40,26 +42,38 @@ public class SimCol extends ScrollPane {
 
 	}
 
+	public void clear() {
+		nodeList.clear();
+		workDoneList.clear();
+	}
 	public void addTaskNode(TaskNodeW2 node) {
 		nodeList.add(node);
-		node.intoCol(conf.getId(), Simulator.getSim().getCurrentTime());
+		if(node.getProgress()>=1) {
+			workDoneList.add(node);
+		}
+		node.intoCol(conf.getId());
 	}
 
 	public void removeTaskNode(TaskNodeW2 node) {
 		nodeList.remove(node);
-		node.outofCol(Simulator.getSim().getCurrentTime());
+		workDoneList.remove(node);
+		node.outofCol();
 	}
 
-	public void pull(int curTime) {
+	/**
+	 * * 拉取
+	 */
+	public void pull() {
 		// 检查在制品,以及拉取的任务数量
+		// 0为 不拉取，-1为无限拉取，n为个数拉取
 		int pullCnt = 0;
 		int wip = conf.getWip();
 		int batchPull = conf.getBatchPull();
 		if (wip == 0) {
-			if (batchPull != 0) {
-				pullCnt = batchPull;
+			if (batchPull == 0) {
+				pullCnt = -1;
 			} else {
-				pullCnt = 1;
+				pullCnt = batchPull;
 			}
 		} else {
 			// 检查当前列的空位
@@ -103,8 +117,8 @@ public class SimCol extends ScrollPane {
 			// 候选队列排序
 			if(ccList.isEmpty()) {
 				AAL.a("看板列" + conf.getId() + "无可拉取项");				
-			}else if (ccList.size() <= pullCnt) {
-				AAL.a("看板列" + conf.getId() + "准备拉取"+ccList.size() +"|"+ ccList);
+			}else if (pullCnt==-1||ccList.size() <= pullCnt) {
+				AAL.a("看板列" + conf.getId() + "准备拉取"+ccList.size() +"|"+pullCnt+"|"+ ccList);
 				Simulator.getSim().moveTaskNode(ccList, this);
 				
 			} else {
@@ -115,12 +129,41 @@ public class SimCol extends ScrollPane {
 		}
 	}
 
+	/**
+	 * *获得完成工作列表
+	 * @param flowId
+	 * @return
+	 */
 	private List<TaskNodeW2> getWorkDoneList(String flowId) {
-		List<TaskNodeW2> list = new ArrayList<TaskNodeW2>();
-		if (!nodeList.isEmpty()) {
-			list.add((TaskNodeW2) nodeList.get(0));
-		}
-		return list;
+		return workDoneList;
 	}
+
+	public void work() {
+		//平均工作法
+		// 获得列上的工作效率
+		double tp=conf.getTp();
+		// 获得列上所有的工作项
+		int taskCnt=nodeList.size();
+		int doneCnt=workDoneList.size();
+		// 获得工作增量的效率
+		double inc=tp/(taskCnt-doneCnt);
+		// 给tasklist列上任务增加增量
+		nodeList.forEach(new Consumer<Node>() {
+			@Override
+			public void accept(Node t) {
+				TaskNodeW2 node=(TaskNodeW2)t;
+				if(node.getProgress()<0.0) {
+					node.workStart();
+				}else if(node.getProgress()<1.0) {
+					double progress=node.increment(inc);
+					if(progress>=1.0) {
+						workDoneList.add(node);
+						node.workDone();
+					}
+				}
+			}
+		});
+	}
+
 
 }

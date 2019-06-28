@@ -51,15 +51,18 @@ public class Simulator {
 	 * @param list
 	 */
 	public void initTaskPool(List<TaskBean> list) {
+		// 清空当前任务池
+		String colId=simBoard.getSimBoardConf().getFirstColId();
+		SimCol col=(SimCol)simBoard.lookup("#"+colId);
+		col.clear();		
+		AAL.a("清空当前任务池...");
 		//根据taskbean生成tasknode
 		list.forEach(new Consumer<TaskBean>() {
 			@Override
 			public void accept(TaskBean bean) {
 				TaskNodeW2 node=getTaskFactory().getNodeByBean(bean);
 				node.setProgress(1);
-				//将tasknode加入任务池中
-				String colId=simBoard.getSimBoardConf().getFirstColId();
-				SimCol col=(SimCol)simBoard.lookup("#"+colId);
+				//将tasknode加入任务池中				
 				col.addTaskNode(node);
 				AAL.a("任务池中加入任务："+node.getTaskBean());
 			}
@@ -69,13 +72,22 @@ public class Simulator {
 	 ** 周期性 拉取
 	 * @param curTime
 	 */
-	public void periodPull(int curTime) {
+	public void periodPull() {
 		//获得实际队列,倒叙拉取
 		for(int i=simCols.size()-1;i>=0;i--) {
 			SimCol simCol=simCols.get(i);
-			simCol.pull(curTime);
+			simCol.pull();
 		}
 	}
+	
+	public void periodWork() {
+		//获得实际队列,倒叙拉取
+		for(int i=simCols.size()-1;i>=0;i--) {
+			SimCol simCol=simCols.get(i);
+			simCol.work();
+		}		
+	}
+	
 	public void addSimCol(SimCol col) {
 		simCols.add(col);
 	}
@@ -89,6 +101,16 @@ public class Simulator {
 			@Override
 			public void accept(TaskNodeW2 taskNode) {
 				String colId=taskNode.getTaskBean().getCurColId();
+				
+				/** 判断是否进入最终列 **/
+				String endColId=simBoard.getSimBoardConf().getLastColId();
+				//AAL.a(simCol.getId()+"-"+colId+"-"+endColId+"="+taskNode.getId());
+				if(simCol.getId().equals(endColId)) {
+					taskNode.setProgress(1);
+				}else {
+					taskNode.setProgress(-1);
+				}
+				/** 任务项界面移动 **/
 				SimCol preCol=(SimCol)simBoard.lookup("#"+colId);
 				preCol.removeTaskNode(taskNode);
 				simCol.addTaskNode(taskNode);

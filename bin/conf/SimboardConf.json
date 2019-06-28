@@ -19,23 +19,30 @@
 			title:"史诗"
 		},
 		"backlog-1":{
-			title:"故事"
+			title:"故事",
+			tp:0.5,
+			batchPull:2
 		},
 		"req":{
-			title:"需求"
+			title:"需求",
+			tp:0.5
 		},
 		"req-0":{
-			title:"需求分析"
+			title:"需求分析",
+			tp:0.5
 		},
 		"req-1":{
-			title:"分析完成"
+			title:"分析完成",
+			tp:0.5
 		},	
 		"dev":{
 			title:"开发" ,
-			wip:3
+			wip:3,
+			tp:0.5
 		},
 		"test":{
-			title:"测试"
+			title:"测试",
+			tp:0.5
 		},
 		"done":{
 			title:"完成"

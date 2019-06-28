@@ -3,7 +3,7 @@ package org.feygo.ksim.task;
 public class TaskBean {
 	
 	private String id;
-	private String est;
+	private int est;
 	private String serviceType;
 	private String workType;
 	
@@ -21,10 +21,10 @@ public class TaskBean {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getEst() {
+	public int getEst() {
 		return est;
 	}
-	public void setEst(String est) {
+	public void setEst(int est) {
 		this.est = est;
 	}
 	public String getServiceType() {
