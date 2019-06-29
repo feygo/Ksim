@@ -11,9 +11,12 @@ import org.feygo.ksim.task.TaskBean;
 import org.feygo.ksim.task.TaskFactory;
 import org.feygo.ksim.tools.AAL;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
@@ -25,13 +28,14 @@ import javafx.util.Duration;
 public class MainUI extends BorderPane {
 	
 	private Scheduler scheduler;
+	private int basePeriod=1000;
 
 	public MainUI(){
 		setId("MainUI");
 		//Menu列表
 		showMenu();
 		scheduler=new Scheduler();
-		scheduler.setPeriod(Duration.seconds(1));
+		scheduler.setPeriod(Duration.millis(basePeriod));
 		
 	}
 	public SimBoard showSimBoard(SimBoardConf conf) {
@@ -58,6 +62,7 @@ public class MainUI extends BorderPane {
 				AAL.a(conf.toString());
 				SimBoard simBoard=showSimBoard(conf);
 				Simulator.getSim().setSimBoard(simBoard);
+				simBoard.initSimBoard();
 			}
 		});
 		hBox.getChildren().add(loadConfButton);
@@ -103,6 +108,32 @@ public class MainUI extends BorderPane {
 		});
 		hBox.getChildren().add(stopSimButton);
 		
+		/** 速度调整 */
+		Slider schedulerSlider=new Slider(0,8,2);
+		schedulerSlider.setValue(1);
+		schedulerSlider.setShowTickMarks(true);
+		schedulerSlider.setShowTickLabels(true);
+		schedulerSlider.setMajorTickUnit(2);
+		schedulerSlider.setBlockIncrement(2);
+		hBox.getChildren().add(schedulerSlider);
+		schedulerSlider.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				//判断newValue是否整数
+				int speed=0;
+				if(newValue.doubleValue()%1==0.0&&newValue.doubleValue()!=0.0) {
+					return;
+				}else if(newValue.doubleValue()<1) {
+					speed=1;					
+				}else {					
+					speed=Double.valueOf(Math.rint(newValue.doubleValue()/2)*2).intValue();
+				}
+				schedulerSlider.setValue(speed);				
+				scheduler.setPeriod(Duration.millis(basePeriod/speed));
+				AAL.a("Scheduler运行周期变动，调整为"+speed+"倍速"+scheduler.getPeriod());
+			}
+			
+		});
 		
 		hBox.prefWidthProperty().bind(this.prefWidthProperty());
 		this.setTop(hBox);

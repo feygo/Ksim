@@ -15,13 +15,15 @@ public class SimBoardConf {
 	private Map<String,ArrayList<String>> Flow;
 	private ArrayList<SimTitleConf> Layout;
 	private Map<String,SimColConf> Cols;
+	private ArrayList<Map<String,String>> Lanes;
 	
 	/** 非配置变量 **/
 	private List<String[]> LayoutTier;
 	private int[] LayoutMatrix;
 	private String FirstColId;
 	private String LastColId;
-	private HashMap<String, ArrayList<String>> FlowColList;
+	private HashMap<String, ArrayList<String>> FlowPreColMap;
+	private HashMap<String, ArrayList<String>> FlowNexColMap;
 	
 	public String getName() {
 		return name;
@@ -47,7 +49,12 @@ public class SimBoardConf {
 	public void setCols(Map<String, SimColConf> cols) {
 		Cols = cols;
 	}
-	
+	public ArrayList<Map<String, String>> getLanes() {
+		return Lanes;
+	}
+	public void setLanes(ArrayList<Map<String, String>> lanes) {
+		Lanes = lanes;
+	}
 	public List<String[]> getLayoutTier() {
 		return LayoutTier;
 	}
@@ -60,29 +67,37 @@ public class SimBoardConf {
 	public String getLastColId() {
 		return LastColId;
 	}
+	
 	@Override
 	public String toString() {
 		StringBuffer sBuffer=new StringBuffer();
 		sBuffer.append("【kanban:").append(name).append("】\n");
-		sBuffer.append("=== flow ===\n");
+		sBuffer.append("=== Flow ===\n");
 		Flow.forEach(new BiConsumer<String, ArrayList<String>>() {
 			@Override
 			public void accept(String t, ArrayList<String> u) {
 				sBuffer.append(t).append(":").append(u).append("\n");				
 			}
 		});
-		sBuffer.append("=== layout ===\n");
+		sBuffer.append("=== Layout ===\n");
 		Layout.forEach(new Consumer<SimTitleConf>() {
 			@Override
 			public void accept(SimTitleConf t) {
 				sBuffer.append(t).append("\n");
 			}
 		});
-		sBuffer.append("=== cols ===\n");
+		sBuffer.append("=== Cols ===\n");
 		Cols.forEach(new BiConsumer<String, SimColConf>() {
 			@Override
 			public void accept(String t, SimColConf u) {
 				sBuffer.append(t).append(":").append(u).append("\n");
+			}
+		});
+		sBuffer.append("=== Lanes ===\n");
+		Lanes.forEach(new Consumer<Map<String, String>>() {
+			@Override
+			public void accept(Map<String, String> t) {
+				sBuffer.append(t).append("\n");
 			}
 		});
 		return sBuffer.toString();
@@ -99,7 +114,8 @@ public class SimBoardConf {
 		freshFirstColId();
 		freshLastColId();
 		// 计算col的流转过程
-		freshFlowMap();
+		freshFlowPreColMap();
+		freshFlowNexColMap();
 	}
 	/**
 	 * [tier,cols]
@@ -185,31 +201,51 @@ public class SimBoardConf {
 		AAL.a("更新右侧第一SimCol："+lastId);
 		LastColId=lastId;
 	}
-	private void freshFlowMap() {
+	private void freshFlowPreColMap() {
 		//Map<String,ArrayList<String>> Flow
-		FlowColList=new HashMap<String, ArrayList<String>>();
+		FlowPreColMap=new HashMap<String, ArrayList<String>>();
 		Flow.forEach(new BiConsumer<String, ArrayList<String>>() {
 			@Override
 			public void accept(String flowId, ArrayList<String> flowList) {
 				for(int i=1;i<flowList.size();i++) {
 					String colId=flowList.get(i);
 					String preColId=flowList.get(i-1);
-					ArrayList<String> list=FlowColList.get(colId);
+					ArrayList<String> list=FlowPreColMap.get(colId);
 					if(list==null) {
 						list=new ArrayList<String>() ;
 					}
 					list.add(preColId+"@"+flowId);
-					FlowColList.put(colId, list);
+					FlowPreColMap.put(colId, list);
 				}				
 			}			
-		});
-		
-		AAL.a("更新FlowColMap："+FlowColList);
+		});		
+		AAL.a("更新FlowPreColMap："+FlowPreColMap);
 	}
-	
 	public ArrayList<String> getFlowPreCol(String colId) {
-		return FlowColList.get(colId);
+		return FlowPreColMap.get(colId);
 	}
-	
+	private void freshFlowNexColMap() {
+		//Map<String,ArrayList<String>> Flow
+		FlowNexColMap=new HashMap<String, ArrayList<String>>();
+		Flow.forEach(new BiConsumer<String, ArrayList<String>>() {
+			@Override
+			public void accept(String flowId, ArrayList<String> flowList) {
+				for(int i=0;i<flowList.size()-1;i++) {
+					String colId=flowList.get(i);
+					String nexColId=flowList.get(i+1);
+					ArrayList<String> list=FlowNexColMap.get(colId);
+					if(list==null) {
+						list=new ArrayList<String>() ;
+					}
+					list.add(nexColId+"@"+flowId);
+					FlowNexColMap.put(colId, list);
+				}				
+			}			
+		});		
+		AAL.a("更新FlowNexColMap："+FlowNexColMap);
+	}
+	public ArrayList<String> getFlowNexCol(String colId) {
+		return FlowNexColMap.get(colId);
+	}
 	
 }

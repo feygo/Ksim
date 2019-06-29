@@ -1,6 +1,7 @@
 package org.feygo.ksim.sim;
 
 import org.feygo.ksim.tools.AAL;
+import org.feygo.ksim.tools.TimeFormater;
 
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -21,7 +22,7 @@ public class Scheduler extends ScheduledService<Number>{
 			@Override
 			protected void updateValue(Number value) {
 				super.updateValue(value);
-				AAL.a("=====时钟："+value.intValue());
+				AAL.a("=====时钟："+TimeFormater.getXDXH8(value.intValue()));
 				Simulator sim=Simulator.getSim();
 				//设置时钟
 				sim.setCurrentTime(value.intValue());

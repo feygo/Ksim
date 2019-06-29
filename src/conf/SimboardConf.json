@@ -1,65 +1,76 @@
 {
-	"name":"test",
+	"name":"综合性看板演示",
 	"Flow":{
-		"normal":["backlog-0","backlog-1","req-0","req-1","dev","preTest","testing","done"],
-		"bug":["dev","preTest","testing","done"]
+		"normal":["backlog","req-0","req-1","dev","preTest","testing","preDeploy","deployed","done"],
+		"bug":["dev","preTest","testing","preDeploy","deployed","done"]
 	},
 	"Layout":[
-		{"id":"backlog",sub:[{"id":"backlog-0"},{"id":"backlog-1"}]},
+		{"id":"backlog"},
 		{"id":"req",sub:[{"id":"req-0"},{"id":"req-1"}]},
 		{"id":"dev"},
-		{"id":"test",sub:[{id:"preTest"},{id:"testing"}]},
+		{"id":"test",sub:[{"id":"preTest"},{"id":"testing"}]},
+		{"id":"deploy",sub:[{"id":"preDeploy"},{"id":"deployed"}]},
 		{"id":"done"}
+	],
+	"Lanes":[
+		{id:"lane1",title:"加急",index:"0"},
+		{id:"lane2",title:"普通",index:"1",default:"1"},
+		{id:"lane3",title:"缓慢",index:"2"}
 	],
 	"Cols":{
 		"backlog":{
-			title:"任务池"
-		},
-		"backlog-0":{
-			title:"史诗"
-		},
-		"backlog-1":{
-			title:"故事",
-			tp:1,
-			batchPull:2,
-			disaggMax:8
+			title:"任务池",
+			colType:Buffer
 		},
 		"req":{
-			title:"需求"
+			title:"需求梳理"
 		},
 		"req-0":{
 			title:"需求分析",
-			tp:1			
+			tp:1,
+			colType:Lane,
+			disaggMax:8
 		},
 		"req-1":{
-			title:"分析完成【队列】",
-			colType:Queue
+			title:"分析完成",
+			colType:LaneQueue,
+			tp:1
 		},	
 		"dev":{
 			title:"开发" ,
 			wip:3,
-			tp:1
+			tp:1,
+			colType:Lane
 		},
 		"test":{
 			title:"测试"
 		},
 		"preTest":{
-			title:"准备测试【缓冲】",
-			colType:Buffer
+			title:"准备测试",
+			colType:LaneBuffer
 		},
 		"testing":{
-			title:"测试",
+			title:"测试中",
+			tp:1,
+			wip:3,
+			batchPull:3
+		},
+		"deploy":{
+			title:"部署"
+		},
+		"preDeploy":{
+			title:"准备部署",
+			colType:Buffer,
+			tp:1			
+		},
+		"deployed":{
+			title:"部署中",
 			tp:1,
 			batchPull:2
 		},
-		"deploy":{
-			title:"部署",
-			tp:1,
-			mergeCol:backlog-1
-		},
 		"done":{
 			title:"完成",
-			tp:1
+			colType:Queue
 		}	
 	}
 }

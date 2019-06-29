@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.feygo.ksim.conf.SimBoardConf;
 import org.feygo.ksim.task.TaskBean;
 import org.feygo.ksim.task.TaskFactory;
 import org.feygo.ksim.tools.AAL;
@@ -46,6 +47,7 @@ public class Simulator {
 	public void setTaskFactory(TaskFactory taskFactory) {
 		this.taskFactory = taskFactory;
 	}
+
 	/**
 	 ** 初始化任务池
 	 * @param list
@@ -54,7 +56,7 @@ public class Simulator {
 		// 清空当前任务池
 		String colId=simBoard.getSimBoardConf().getFirstColId();
 		SimCol col=(SimCol)simBoard.lookup("#"+colId);
-		col.clear();		
+		col.clearTaskNode();		
 		AAL.a("清空当前任务池...");
 		//根据taskbean生成tasknode
 		list.forEach(new Consumer<TaskBean>() {
@@ -90,6 +92,7 @@ public class Simulator {
 	
 	public void addSimCol(SimCol col) {
 		simCols.add(col);
+		AAL.a("创建看板列："+col);
 	}
 	/**
 	 ** 移动 任务项

@@ -23,11 +23,11 @@ import javafx.scene.layout.VBox;
 
 public class SimCol extends ScrollPane {
 
-	private SimColConf conf;
+	protected SimColConf conf;
 
-	protected ObservableList<Node> nodeList;
+	private ObservableList<Node> nodeList;
 	
-	protected List<TaskNodeW2> workDoneList=new ArrayList<TaskNodeW2>();
+	private List<TaskNodeW2> workDoneList=new ArrayList<TaskNodeW2>();
 
 	public SimCol(SimColConf conf) {
 		this.conf = conf;
@@ -41,17 +41,20 @@ public class SimCol extends ScrollPane {
 		this.setContent(vBox);
 		nodeList = vBox.getChildren();
 		vBox.prefWidthProperty().bind(this.widthProperty().multiply(0.9));
+		vBox.prefHeightProperty().bind(this.heightProperty());
+		//vBox.prefWidthProperty().bind(this.prefViewportWidthProperty());
+		//vBox.prefWidthProperty().bind(this.widthProperty().multiply(0.9));
 
 	}
 
-	public void clear() {
-		nodeList.clear();
-		workDoneList.clear();
+	public void clearTaskNode() {
+		getNodeList().clear();
+		getWorkDoneList("").clear();
 	}
 	public void addTaskNode(TaskNodeW2 node) {
-		nodeList.add(node);
+		getNodeList().add(node);
 		if(node.getProgress()>=1) {
-			workDoneList.add(node);
+			addToWorkDoneList(node);
 		}
 		node.intoCol(conf.getId());
 		//执行拆分检查
@@ -63,9 +66,14 @@ public class SimCol extends ScrollPane {
 		node.outofCol();
 	}
 	protected void removeTaskNodeOnly(TaskNodeW2 node) {
-		nodeList.remove(node);
-		workDoneList.remove(node);
+		getNodeList().remove(node);
+		getWorkDoneList("").remove(node);
 	}
+	
+	protected ObservableList<Node> getNodeList() {
+		return nodeList;
+	}
+
 	/**
 	 * * 拉取
 	 */
@@ -83,7 +91,7 @@ public class SimCol extends ScrollPane {
 			}
 		} else {
 			// 检查当前列的空位
-			int curCnt = nodeList.size();
+			int curCnt = getNodeList().size();
 			if (curCnt >= wip) {
 				AAL.a("看板列" + conf.getId() + "WIP为"+wip+"，现有" + curCnt+"空位不足，不足以拉取！");
 			} else {
@@ -139,7 +147,7 @@ public class SimCol extends ScrollPane {
 	 * @param flowId
 	 * @return
 	 */
-	private List<TaskNodeW2> getWorkDoneList(String flowId) {
+	protected List<TaskNodeW2> getWorkDoneList(String flowId) {
 		return workDoneList;
 	}
 
@@ -148,12 +156,12 @@ public class SimCol extends ScrollPane {
 		// 获得列上的工作效率
 		double tp=conf.getTp();
 		// 获得列上所有的工作项
-		int taskCnt=nodeList.size();
-		int doneCnt=workDoneList.size();
+		int taskCnt=getNodeList().size();
+		int doneCnt=getWorkDoneList("").size();
 		// 获得工作增量的效率
 		double inc=tp/(taskCnt-doneCnt);
 		// 给tasklist列上任务增加增量
-		nodeList.forEach(new Consumer<Node>() {
+		getNodeList().forEach(new Consumer<Node>() {
 			@Override
 			public void accept(Node t) {
 				TaskNodeW2 node=(TaskNodeW2)t;
@@ -162,12 +170,15 @@ public class SimCol extends ScrollPane {
 				}else if(node.getProgress()<1.0) {
 					double progress=node.increment(inc);
 					if(progress>=1.0) {
-						workDoneList.add(node);
+						addToWorkDoneList(node);
 						node.workDone();
 					}
 				}
 			}
 		});
+	}
+	protected void addToWorkDoneList(TaskNodeW2 node) {
+		workDoneList.add(node);
 	}
 
 	/**
@@ -195,4 +206,20 @@ public class SimCol extends ScrollPane {
 		}
 	}
 
+	/**
+	 * 通知自己的流程后列拉一下自己
+	 */
+	public void messagePull() {
+		ArrayList<String> nexColIdList=Simulator.getSim().getSimBoard().getSimBoardConf().getFlowNexCol(getId());
+		if(nexColIdList!=null&&!nexColIdList.isEmpty()) {
+			nexColIdList.forEach(new Consumer<String>() {
+				@Override
+				public void accept(String t) {
+					String nexColId = t.split("@")[0];
+					SimCol col=(SimCol)Simulator.getSim().getSimBoard().lookup("#"+nexColId);
+					col.pull();
+				}
+			});		
+		}
+	}
 }

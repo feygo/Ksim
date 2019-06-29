@@ -15,9 +15,14 @@
 {
 	-fx-border-color: #708090;
 	-fx-border-width: 1;
-	-fx-border-insets: 1 5 1 5;/** top right bottom left **/
+	-fx-border-insets: 1 5 1 5;/** top right bottom left **/ 
 }
 
+.SimLaneColCSS
+{
+	-fx-border-color: #ff7f50;/**  **/
+	-fx-border-width: 1;
+}
 .TaskNodeCSS
 {
 	-fx-background-color:#66cdaa;

@@ -23,10 +23,12 @@ public class SimBoard extends VBox {
 
 	public SimBoard(SimBoardConf conf){
 		this.conf=conf;
+	}
+	public void initSimBoard() {
 		// 生成标题栏
 		initTitle();
 		// 生成看板栏
-		InitKanBanCols();
+		InitKanBanCols();		
 	}
 
 	private void InitKanBanCols() {
@@ -70,6 +72,12 @@ public class SimBoard extends VBox {
 			col=new SimBufferCol(conf);
 		}else if("Queue".equalsIgnoreCase(colType)){
 			col=new SimQueueCol(conf);
+		}else if("Lane".equalsIgnoreCase(colType)) {
+			col=new SimLaneCol(conf);
+		}else if("LaneBuffer".equalsIgnoreCase(colType)){
+			col=new SimLaneBufferCol(conf);
+		}else if("LaneQueue".equalsIgnoreCase(colType)) {
+			col=new SimLaneQueueCol(conf);
 		}else {
 			col=new SimCol(conf);
 		}
