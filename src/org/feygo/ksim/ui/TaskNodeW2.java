@@ -7,11 +7,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * @author Feygo
+ * 只有进度条和工作项
+ */
 public class TaskNodeW2 extends BorderPane {
 
 	private TaskBean taskBean;
 	
-	private ProgressBar pBar;
+	protected ProgressBar pBar;
 	
 	public TaskBean getTaskBean() {
 		return taskBean;
@@ -30,12 +34,11 @@ public class TaskNodeW2 extends BorderPane {
 
 	public TaskNodeW2(TaskBean taskBean) {
 		this.taskBean=taskBean;
-		this.setId(taskBean.getId());
-		initTaskNode();
-		this.getStyleClass().add("TaskNodeCSS");
+		this.setId(taskBean.getId());		
 	}
+	
 
-	private void initTaskNode() {
+	public void initTaskNode() {
 		Label idLabel=new Label(taskBean.getId());
 		this.setTop(idLabel);
 		Label estLabel=new Label(taskBean.getEst()+"");
@@ -43,6 +46,7 @@ public class TaskNodeW2 extends BorderPane {
 		pBar=new ProgressBar();
 		pBar.prefWidthProperty().bind(this.widthProperty());
 		this.setBottom(pBar);		
+		this.getStyleClass().add("TaskNodeCSS");
 	}
 	public void intoCol(String colId) {
 		taskBean.setCurColId(colId);

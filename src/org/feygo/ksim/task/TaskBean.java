@@ -5,7 +5,7 @@ public class TaskBean {
 	private String id;
 	private int est;
 	private String serviceType;
-	private String workType;
+	private String taskType;
 	
 	/** 任务拆解变量 **/	
 	private String pId;
@@ -39,19 +39,19 @@ public class TaskBean {
 	public void setServiceType(String serviceType) {
 		this.serviceType = serviceType;
 	}
-	public String getWorkType() {
-		return workType;
+	public String getTaskType() {
+		return taskType;
 	}
-	public void setWorkType(String workType) {
-		this.workType = workType;
+	public void setTaskType(String taskType) {
+		this.taskType = taskType;
 	}
 	@Override
 	public String toString() {
 		StringBuffer sBuffer=new StringBuffer();
 		sBuffer.append("[");
 		sBuffer.append(id).append("#").append(est);
-		if(workType!=null) {
-			sBuffer.append("-").append(workType);
+		if(taskType!=null) {
+			sBuffer.append("-").append(taskType);
 		}
 		if(serviceType!=null) {
 			sBuffer.append("-").append(serviceType);

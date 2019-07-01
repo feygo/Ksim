@@ -13,9 +13,9 @@
 		{"id":"done"}
 	],
 	"Lanes":[
-		{id:"lane1",title:"加急",index:"0"},
-		{id:"lane2",title:"普通",index:"1",default:"1"},
-		{id:"lane3",title:"缓慢",index:"2"}
+		{id:"Urgency",title:"加急",index:"0"},
+		{id:"Ordinary",title:"普通",index:"1",default:"1"},
+		{id:"Focus",title:"缓慢",index:"2"}
 	],
 	"Cols":{
 		"backlog":{

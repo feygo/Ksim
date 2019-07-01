@@ -20,6 +20,7 @@ import org.feygo.ksim.conf.ConfLoader;
 import org.feygo.ksim.conf.SimBoardConf;
 import org.feygo.ksim.tools.AAL;
 import org.feygo.ksim.ui.TaskNodeW2;
+import org.feygo.ksim.ui.TaskNodeW4;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -91,7 +92,9 @@ public class TaskFactory {
 	}
 
 	public TaskNodeW2 getNodeByBean(TaskBean bean) {
-		return new TaskNodeW2(bean);
+		TaskNodeW2 node=new TaskNodeW4(bean);
+		node.initTaskNode();
+		return node;
 	}
 
 	public List<TaskBean> disaggWorkBean(TaskBean taskBean, int estMax) {
@@ -119,7 +122,7 @@ public class TaskFactory {
 		newBean.setId(taskBean.getId());
 		newBean.setEst(taskBean.getEst());
 		newBean.setServiceType(taskBean.getServiceType());
-		newBean.setWorkType(taskBean.getWorkType());
+		newBean.setTaskType(taskBean.getTaskType());
 		
 		newBean.setCurColId(taskBean.getCurColId());
 		newBean.setTmpDoneTime(taskBean.getTmpDoneTime());
