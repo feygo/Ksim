@@ -8,10 +8,10 @@ import java.util.function.Consumer;
 import org.feygo.ksim.conf.SimBoardConf;
 import org.feygo.ksim.task.TaskBean;
 import org.feygo.ksim.task.TaskFactory;
+import org.feygo.ksim.task.ui.TaskNodeW2;
 import org.feygo.ksim.tools.AAL;
 import org.feygo.ksim.ui.SimBoard;
 import org.feygo.ksim.ui.SimCol;
-import org.feygo.ksim.ui.TaskNodeW2;
 
 public class Simulator {
 
@@ -94,6 +94,10 @@ public class Simulator {
 		simCols.add(col);
 		AAL.a("创建看板列："+col);
 	}
+	public ArrayList<SimCol> getSimCols() {
+		return simCols;
+	}
+
 	/**
 	 ** 移动 任务项
 	 * @param cList
@@ -122,6 +126,25 @@ public class Simulator {
 			}
 		});
 		
+	}
+
+	public boolean periodCheckContinue() {
+		boolean isContinue=false;
+		//获得实际队列,倒叙拉取
+		for(int i=simCols.size()-2;i>=0;i--) {
+			SimCol simCol=simCols.get(i);
+			if(!simCol.isEmpty()) {
+				isContinue=true;
+				break;
+			}
+		}	
+		return isContinue;
+	}
+
+	public void recordData() {
+		String lastColId=simBoard.getSimBoardConf().getLastColId();
+		SimCol col=(SimCol)simBoard.lookup("#"+lastColId);
+		col.recordDoneNode();
 	}
 	
 	

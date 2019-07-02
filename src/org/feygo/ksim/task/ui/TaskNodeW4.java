@@ -1,4 +1,4 @@
-package org.feygo.ksim.ui;
+package org.feygo.ksim.task.ui;
 
 import org.feygo.ksim.task.TaskBean;
 import org.feygo.ksim.task.TaskConstant;

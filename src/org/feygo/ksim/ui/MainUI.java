@@ -3,8 +3,10 @@ package org.feygo.ksim.ui;
 import java.net.URL;
 import java.util.List;
 
+import org.feygo.ksim.Launcher;
 import org.feygo.ksim.conf.ConfLoader;
 import org.feygo.ksim.conf.SimBoardConf;
+import org.feygo.ksim.data.ui.TaskFlowTable;
 import org.feygo.ksim.sim.Scheduler;
 import org.feygo.ksim.sim.Simulator;
 import org.feygo.ksim.task.TaskBean;
@@ -15,10 +17,13 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
@@ -135,7 +140,29 @@ public class MainUI extends BorderPane {
 			
 		});
 		
+		/** 数据监控窗口 **/
+		Button monitorDataButton=new Button();
+		monitorDataButton.setText("数据监视");
+		monitorDataButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				TaskFlowTable tfTable=new TaskFlowTable();
+				
+				Scene scene=new Scene(tfTable);
+				Stage monitorStage=new Stage();
+				monitorStage.setScene(scene);
+				//monitorStage.initOwner(Launcher.getPrimaryStage());
+				monitorStage.setTitle("数据监控窗口");
+				monitorStage.initModality(Modality.WINDOW_MODAL);
+				monitorStage.show();
+			}
+		});
+		hBox.getChildren().add(monitorDataButton);		
+		
+		
 		hBox.prefWidthProperty().bind(this.prefWidthProperty());
 		this.setTop(hBox);
+		
+		
 	}
 }

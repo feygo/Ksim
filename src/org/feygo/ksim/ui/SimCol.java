@@ -15,6 +15,8 @@ import org.feygo.ksim.conf.SimColConf;
 import org.feygo.ksim.sim.Simulator;
 import org.feygo.ksim.task.TaskBean;
 import org.feygo.ksim.task.TaskFactory;
+import org.feygo.ksim.task.TaskRecord;
+import org.feygo.ksim.task.ui.TaskNodeW2;
 import org.feygo.ksim.tools.AAL;
 
 import javafx.collections.ObservableList;
@@ -359,6 +361,26 @@ public class SimCol extends ScrollPane {
 			mNode.setProgress(1);
 			return mNode;
 		}
+	}
+
+	public boolean isEmpty() {
+		return getNodeList().isEmpty();
+	}
+
+	public void recordDoneNode() {
+		List<TaskBean> beanList=Simulator.getSim().getTaskFactory().getBeanFromNode(getWorkDoneList(""));
+		List  recordList=new ArrayList<Map<String,TaskRecord>>(); 
+		beanList.forEach(new Consumer<TaskBean>() {
+			@Override
+			public void accept(TaskBean bean) {
+				recordList.add(bean.getRecordMap());
+			}
+		});		
+		Simulator.getSim().getTaskFactory().writeRecordToFile(recordList);
+	}
+
+	public SimColConf getSimColConf() {
+		return conf;
 	}
 	
 }

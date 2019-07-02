@@ -1,4 +1,4 @@
-package org.feygo.ksim.ui;
+package org.feygo.ksim.task.ui;
 
 import org.feygo.ksim.sim.Simulator;
 import org.feygo.ksim.task.TaskBean;
@@ -55,6 +55,7 @@ public class TaskNodeW2 extends BorderPane {
 	public void outofCol() {
 		taskBean.setTmpDoneTime(Simulator.getSim().getCurrentTime());
 		//taskBean更新记录信息
+		taskBean.record();
 	}
 	public void workDone() {
 		taskBean.setTmpDoneTime(Simulator.getSim().getCurrentTime());

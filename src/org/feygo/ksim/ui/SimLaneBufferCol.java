@@ -1,6 +1,7 @@
 package org.feygo.ksim.ui;
 
 import org.feygo.ksim.conf.SimColConf;
+import org.feygo.ksim.task.ui.TaskNodeW2;
 
 public class SimLaneBufferCol extends SimLaneCol {
 

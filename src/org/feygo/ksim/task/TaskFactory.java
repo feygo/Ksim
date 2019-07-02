@@ -18,9 +18,8 @@ import javax.management.RuntimeErrorException;
 
 import org.feygo.ksim.conf.ConfLoader;
 import org.feygo.ksim.conf.SimBoardConf;
+import org.feygo.ksim.task.ui.TaskNodeW2;
 import org.feygo.ksim.tools.AAL;
-import org.feygo.ksim.ui.TaskNodeW2;
-import org.feygo.ksim.ui.TaskNodeW4;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -217,7 +216,7 @@ public class TaskFactory {
 		return mBean;
 	}
 
-	public List<TaskBean> getBeanFromNode(ArrayList<TaskNodeW2> sList) {
+	public List<TaskBean> getBeanFromNode(List<TaskNodeW2> sList) {
 		List<TaskBean> beanList=new ArrayList<TaskBean>();
 		sList.forEach(new Consumer<TaskNodeW2>() {
 			@Override
@@ -226,5 +225,11 @@ public class TaskFactory {
 			}
 		});
 		return beanList;
+	}
+	
+	public void writeRecordToFile(List list) {
+		Gson gson=new Gson();
+		String s=gson.toJson(list);
+		System.out.println(s);
 	}
 }

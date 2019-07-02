@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import org.feygo.ksim.conf.SimColConf;
 import org.feygo.ksim.sim.Simulator;
+import org.feygo.ksim.task.ui.TaskNodeW2;
 import org.feygo.ksim.tools.AAL;
 
 /**

@@ -30,6 +30,13 @@ public class Scheduler extends ScheduledService<Number>{
 				sim.periodPull();
 				//工作调度
 				sim.periodWork();
+				//检查仿真是否停止
+				if(!sim.periodCheckContinue()) {
+					AAL.a("前列均无任务项，仿真运行停止！");
+					Scheduler.this.cancel();
+					AAL.a("定时器状态："+Scheduler.this.getState());
+					sim.recordData();
+				};
 			}
 			
 		};

@@ -1,5 +1,12 @@
 package org.feygo.ksim.task;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.feygo.ksim.data.DataCenter;
+
 public class TaskBean {
 	
 	private String id;
@@ -22,6 +29,7 @@ public class TaskBean {
 	private int tmpWorkTime;
 	private int tmpDoneTime;
 	
+	private Map<String,TaskRecord> recordMap=new HashMap<String,TaskRecord>();
 	
 	public String getId() {
 		return id;
@@ -140,6 +148,29 @@ public class TaskBean {
 	}
 	public void setMergeCol(String mergeCol) {
 		this.mergeCol = mergeCol;
+	}
+	
+	public Map<String, TaskRecord> getRecordMap() {
+		return recordMap;
+	}
+	public void record() {
+		TaskRecord tRecord=new TaskRecord();
+		tRecord.setColId(curColId);
+		tRecord.setTaskId(id);
+		tRecord.setIntoColTime(tmpStartTime);
+		tRecord.setOutofColTime(tmpEndTime);
+		tRecord.setWorkStartTime(tmpWorkTime);
+		tRecord.setWorkDoneTime(tmpDoneTime);
+		tRecord.fresh();
+		
+		recordMap.put(curColId, tRecord);
+		DataCenter.getDataCenter().addTaskRecord(tRecord);
+		
+		curColId=null;
+		tmpStartTime=0;
+		tmpEndTime=0;
+		tmpWorkTime=0;
+		tmpDoneTime=0;
 	}
 
 	
