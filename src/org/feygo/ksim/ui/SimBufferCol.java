@@ -24,14 +24,19 @@ public class SimBufferCol extends SimCol {
 	public void addTaskNode(TaskNodeW2 node) {
 		node.setProgress(-1);
 		super.addTaskNode(node);
-		super.addToWorkDoneList(node);
+	}
+	
+	@Override
+	protected boolean isWorkerCol() {
+		return false;
 	}
 
 	@Override
-	public void work() {
+	protected boolean sendMessagePull() {
 		if(!getNodeList().isEmpty()) {
-			super.messagePull();
-		}		
+			return true;
+		}
+		return false;
 	}
 	
 	

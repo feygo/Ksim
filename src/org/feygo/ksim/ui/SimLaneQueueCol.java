@@ -16,10 +16,17 @@ public class SimLaneQueueCol extends SimLaneCol {
 		super.addTaskNode(node);
 	}
 
+
 	@Override
-	public void work() {
+	protected boolean isWorkerCol() {
+		return false;
+	}
+	
+	@Override
+	protected boolean sendMessagePull() {
 		if(!getNodeList().isEmpty()) {
-			super.messagePull();
-		}	
+			return true;
+		}
+		return false;
 	}
 }

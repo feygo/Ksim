@@ -23,11 +23,16 @@ public class SimQueueCol extends SimCol {
 	}
 
 	@Override
-	public void work() {
-		if(!getNodeList().isEmpty()) {
-			super.messagePull();
-		}	
+	protected boolean isWorkerCol() {
+		return false;
 	}
 
+	@Override
+	protected boolean sendMessagePull() {
+		if(!getNodeList().isEmpty()) {
+			return true;
+		}
+		return false;
+	}
 	
 }

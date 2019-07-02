@@ -92,7 +92,7 @@ public class TaskFactory {
 	}
 
 	public TaskNodeW2 getNodeByBean(TaskBean bean) {
-		TaskNodeW2 node=new TaskNodeW4(bean);
+		TaskNodeW2 node=new TaskNodeW2(bean);
 		node.initTaskNode();
 		return node;
 	}
@@ -123,6 +123,7 @@ public class TaskFactory {
 		newBean.setEst(taskBean.getEst());
 		newBean.setServiceType(taskBean.getServiceType());
 		newBean.setTaskType(taskBean.getTaskType());
+		newBean.setMergeCol(taskBean.getMergeCol());
 		
 		newBean.setCurColId(taskBean.getCurColId());
 		newBean.setTmpDoneTime(taskBean.getTmpDoneTime());
@@ -185,5 +186,45 @@ public class TaskFactory {
 			throw new RuntimeException(number+"并不是斐波那契数列中的数值，请检查配置");
 		}
 		return lv;
+	}
+
+	public TaskBean mergeWorkBean(List<TaskBean> sList) {
+		TaskBean mBean=new TaskBean();
+		TaskBean sBean=sList.get(0);
+		mBean.setId(sBean.getpId());
+		mBean.setTaskType(sBean.getTaskType());
+		mBean.setServiceType(sBean.getServiceType());
+		mBean.setMergeCol(sBean.getMergeCol());
+		
+		mBean.setCurColId(sBean.getCurColId());
+		int est=0;
+		int tmpStartTime=sBean.getTmpStartTime();
+		int tmpEndTime=sBean.getTmpEndTime();
+		for(int i=0;i<sList.size();i++) {
+			TaskBean bean=sList.get(i);
+			est=est+bean.getEst();
+			if(tmpStartTime>bean.getTmpStartTime()) {
+				tmpStartTime=bean.getTmpStartTime();
+			}
+			if(tmpEndTime<bean.getTmpEndTime()) {
+				tmpEndTime=bean.getTmpEndTime();
+			}
+		}
+		mBean.setEst(est);
+		mBean.setTmpEndTime(tmpEndTime);
+		mBean.setTmpStartTime(tmpStartTime);
+
+		return mBean;
+	}
+
+	public List<TaskBean> getBeanFromNode(ArrayList<TaskNodeW2> sList) {
+		List<TaskBean> beanList=new ArrayList<TaskBean>();
+		sList.forEach(new Consumer<TaskNodeW2>() {
+			@Override
+			public void accept(TaskNodeW2 node) {
+				beanList.add(node.getTaskBean());
+			}
+		});
+		return beanList;
 	}
 }

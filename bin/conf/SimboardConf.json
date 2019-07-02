@@ -33,8 +33,8 @@
 		},
 		"req-1":{
 			title:"分析完成",
-			colType:LaneQueue,
-			tp:1
+			tp:1,
+			colType:Queue
 		},	
 		"dev":{
 			title:"开发" ,
@@ -52,7 +52,6 @@
 		"testing":{
 			title:"测试中",
 			tp:1,
-			wip:3,
 			batchPull:3
 		},
 		"deploy":{
@@ -60,7 +59,7 @@
 		},
 		"preDeploy":{
 			title:"准备部署",
-			colType:Buffer,
+			colType:Queue,
 			tp:1			
 		},
 		"deployed":{

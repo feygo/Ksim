@@ -6,6 +6,8 @@ public class TaskBean {
 	private int est;
 	private String serviceType;
 	private String taskType;
+	// 此列中有分解任务，则等待合并
+	private String mergeCol;
 	
 	/** 任务拆解变量 **/	
 	private String pId;
@@ -55,6 +57,12 @@ public class TaskBean {
 		}
 		if(serviceType!=null) {
 			sBuffer.append("-").append(serviceType);
+		}
+		if(mergeCol!=null) {
+			sBuffer.append("-mg:").append(mergeCol);
+		}
+		if(curColId!=null) {
+			sBuffer.append(",col:").append(curColId);
 		}
 		if(pId!=null) {
 			sBuffer.append(",pId:").append(pId);
@@ -126,6 +134,12 @@ public class TaskBean {
 	}
 	public void setDisaggCnt(int disaggCnt) {
 		this.disaggCnt = disaggCnt;
+	}
+	public String getMergeCol() {
+		return mergeCol;
+	}
+	public void setMergeCol(String mergeCol) {
+		this.mergeCol = mergeCol;
 	}
 
 	

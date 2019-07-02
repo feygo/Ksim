@@ -2,6 +2,7 @@ package org.feygo.ksim.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,16 +52,24 @@ public class SimCol extends ScrollPane {
 		getNodeList().clear();
 		getWorkDoneList("").clear();
 	}
+	/**
+	 * 列中添加node
+	 * @param node
+	 */
 	public void addTaskNode(TaskNodeW2 node) {
-		getNodeList().add(node);
-		if(node.getProgress()>=1) {
-			addToWorkDoneList(node);
-		}
+		addTaskNodeOnly(node);
 		node.intoCol(conf.getId());
 		//执行拆分检查
 		checkDisagg(node);
 	}
+	protected void addTaskNodeOnly(TaskNodeW2 node) {
+		getNodeList().add(node);
+	}
 
+	/**
+	 * 列中删除Node
+	 * @param node
+	 */
 	public void removeTaskNode(TaskNodeW2 node) {
 		removeTaskNodeOnly(node);
 		node.outofCol();
@@ -73,9 +82,16 @@ public class SimCol extends ScrollPane {
 	protected ObservableList<Node> getNodeList() {
 		return nodeList;
 	}
-
 	/**
-	 * * 拉取
+	 * *获得完成工作列表
+	 * @param flowId
+	 * @return
+	 */
+	protected List<TaskNodeW2> getWorkDoneList(String flowId) {
+		return workDoneList;
+	}
+	/**
+	 * * 拉取，不被子类复写
 	 */
 	public void pull() {
 		// 检查在制品,以及拉取的任务数量
@@ -113,11 +129,13 @@ public class SimCol extends ScrollPane {
 		// 从流程前列中，获得可拉取的备选任务项
 		SimBoardConf bConf = Simulator.getSim().getSimBoard().getSimBoardConf();
 		ArrayList<String> preColIdList = bConf.getFlowPreCol(conf.getId());
+		StringBuffer preColString=new StringBuffer();
 		if (preColIdList != null) {
 			List<TaskNodeW2> cList = new ArrayList<TaskNodeW2>();
 			preColIdList.forEach(new Consumer<String>() {
 				@Override
 				public void accept(String f) {
+					preColString.append(f).append("|");
 					String preColId = f.split("@")[0];
 					String flowId = f.split("@")[1];
 					SimCol preCol = (SimCol) Simulator.getSim().getSimBoard().lookup("#" + preColId);
@@ -131,27 +149,102 @@ public class SimCol extends ScrollPane {
 			if(ccList.isEmpty()) {
 				AAL.a("看板列" + conf.getId() + "无可拉取项");				
 			}else if (pullCnt==-1||ccList.size() <= pullCnt) {
-				AAL.a("看板列" + conf.getId() + "准备拉取 "+pullCnt+"个但拉取"+ccList.size() +"个："+ ccList);
+				AAL.a("看板列" + conf.getId() + "准备拉取从"+preColString.toString()+"中拉取"+pullCnt+"个但拉取"+ccList.size() +"个："+ ccList);
 				Simulator.getSim().moveTaskNode(ccList, this);
 				
 			} else {
 				List<TaskNodeW2> subList=ccList.subList(0, pullCnt);
-				AAL.a("看板列" + conf.getId() + "准备拉取 "+pullCnt +"个从:"+ccList.size()+"中：" + subList);
+				AAL.a("看板列" + conf.getId() + "准备拉取从"+preColString.toString()+"中拉取"+pullCnt +"个，从:"+ccList.size()+"中：" + subList);
 				Simulator.getSim().moveTaskNode(subList, this);				
 			}
 		}
 	}
 
+
+
 	/**
-	 * *获得完成工作列表
-	 * @param flowId
-	 * @return
+	 * 工作，不被子类复写
 	 */
-	protected List<TaskNodeW2> getWorkDoneList(String flowId) {
-		return workDoneList;
+	public void work() {		
+		List<String> pIdList=new ArrayList<String>();
+		List<TaskNodeW2> changeNodeList=new ArrayList<TaskNodeW2>();
+		// 给tasklist列上任务增加增量
+		getNodeList().forEach(new Consumer<Node>() {
+			@Override
+			public void accept(Node t) {
+				TaskNodeW2 node=(TaskNodeW2)t;
+				if(node.getProgress()<0.0) {
+					node.workStart();
+				} 
+				//工作的节点。
+				TaskNodeW2 workDoneNode=null;
+				// 进行工作, 非工作列和 工作列进度为 1的作为完成任务项
+				if(isWorkerCol()) {
+					double inc=workInc(node);
+					double progress=node.increment(inc);
+					if(node.getProgress()>=1.0) {
+						workDoneNode=node;
+					}
+				}else {
+					workDoneNode=node;
+				}				
+				//检查是否要进行合并检查
+				boolean isMerge=checkMerge(node);
+				if(isMerge) {
+					// 如果是，尝试合并是否成功。
+					String pId=node.getTaskBean().getpId();
+					TaskNodeW2 mNode=mergeTaskNode(pId);
+					if(mNode!=null) {
+						// 尝试进行合并
+						pIdList.add(pId);
+						changeNodeList.add(mNode);
+						workDoneNode=mNode;
+					}else {
+						workDoneNode=null;
+					}
+				}
+				if(workDoneNode!=null) {
+					addToWorkDoneList(workDoneNode);
+					workDoneNode.workDone();
+				}
+			}
+		});
+		removeSubNode(pIdList);
+		changeNodeList.forEach(new Consumer<TaskNodeW2>() {
+			@Override
+			public void accept(TaskNodeW2 node) {
+				addTaskNodeOnly(node);
+			}
+		});
+		//向后方发动拉取通知
+		if(sendMessagePull()) {
+			messagePull();
+		}
+	}
+	
+	protected boolean isWorkerCol() {
+		return true;
 	}
 
-	public void work() {
+	private void removeSubNode(List<String> pIdList) {
+		pIdList.forEach(new Consumer<String>() {
+			@Override
+			public void accept(String pId) {
+				// 如果合并成功，则正常工作，删除原有子任务，如果合并失败，则继续等待
+				ArrayList<TaskNodeW2> sNodeList=mergeNodeMap.get(pId);
+				sNodeList.forEach(new Consumer<TaskNodeW2>() {
+					@Override
+					public void accept(TaskNodeW2 t) {
+						removeTaskNodeOnly(t);
+					}
+				});
+				mergeNodeMap.remove(pId);
+			}
+		});
+		pIdList.clear();
+	}
+	
+	protected double workInc(TaskNodeW2 node) {
 		//平均工作法
 		// 获得列上的工作效率
 		double tp=conf.getTp();
@@ -160,23 +253,9 @@ public class SimCol extends ScrollPane {
 		int doneCnt=getWorkDoneList("").size();
 		// 获得工作增量的效率
 		double inc=tp/(taskCnt-doneCnt);
-		// 给tasklist列上任务增加增量
-		getNodeList().forEach(new Consumer<Node>() {
-			@Override
-			public void accept(Node t) {
-				TaskNodeW2 node=(TaskNodeW2)t;
-				if(node.getProgress()<0.0) {
-					node.workStart();
-				}else if(node.getProgress()<1.0) {
-					double progress=node.increment(inc);
-					if(progress>=1.0) {
-						addToWorkDoneList(node);
-						node.workDone();
-					}
-				}
-			}
-		});
+		return inc;
 	}
+	
 	protected void addToWorkDoneList(TaskNodeW2 node) {
 		workDoneList.add(node);
 	}
@@ -185,7 +264,7 @@ public class SimCol extends ScrollPane {
 	 * 根据列的最大est限制 来拆分工作
 	 * @param node
 	 */
-	public void checkDisagg(TaskNodeW2 node) {
+	protected void checkDisagg(TaskNodeW2 node) {
 		// 获得最大限额
 		int estMax=conf.getDisaggMax();
 		int est=node.getTaskBean().getEst();
@@ -206,20 +285,80 @@ public class SimCol extends ScrollPane {
 		}
 	}
 
+	protected boolean sendMessagePull() {
+		return false;
+	}
 	/**
 	 * 通知自己的流程后列拉一下自己
 	 */
-	public void messagePull() {
+	private void messagePull() {
 		ArrayList<String> nexColIdList=Simulator.getSim().getSimBoard().getSimBoardConf().getFlowNexCol(getId());
 		if(nexColIdList!=null&&!nexColIdList.isEmpty()) {
 			nexColIdList.forEach(new Consumer<String>() {
 				@Override
 				public void accept(String t) {
 					String nexColId = t.split("@")[0];
-					SimCol col=(SimCol)Simulator.getSim().getSimBoard().lookup("#"+nexColId);
-					col.pull();
+					String flowId =t.split("@")[1];
+					SimCol nexCol=(SimCol)Simulator.getSim().getSimBoard().lookup("#"+nexColId);
+					AAL.a(getId()+"的"+flowId+"流向"+nexColId+"发出拉取通知！");
+					nexCol.pull();
 				}
 			});		
 		}
 	}
+	private Map<String, ArrayList<TaskNodeW2>> mergeNodeMap=new HashMap<String, ArrayList<TaskNodeW2>>();
+	
+	/**
+	 * *检查是否合并，并将不进行合并的子任务，添加到map中
+	 * @param node
+	 * @return
+	 */
+	private boolean checkMerge(TaskNodeW2 node) {
+		boolean isMerge=false;
+		//检查node是否指定了合并列
+		String mCol=node.getTaskBean().getMergeCol();
+		if(mCol!=null) {
+			if(getId().equalsIgnoreCase(mCol)) {
+				//检查node是否为子任务
+				String pId=node.getTaskBean().getpId();
+				if(pId!=null) {
+					isMerge=true;
+					// 是子任务，则将子任务防止在待合并任务map中。
+					ArrayList<TaskNodeW2> sList=mergeNodeMap.get(pId);
+					if(sList==null) {
+						sList=new ArrayList<TaskNodeW2>();
+						mergeNodeMap.put(pId, sList);
+					}
+					if(!sList.contains(node)) {
+						sList.add(node);
+					}					
+					AAL.a(pId+"-当前mergeNodeMap:"+sList.toString());					
+				}
+			}
+		}		
+		return isMerge;
+	}
+
+	/**
+	 * 合并子任务项，进度为1
+	 * @param pId
+	 * @return
+	 */
+	private TaskNodeW2 mergeTaskNode(String pId) {
+		ArrayList<TaskNodeW2> sList=mergeNodeMap.get(pId);
+		TaskNodeW2 tmpNode=sList.get(0);
+		int sDCnt=tmpNode.getTaskBean().getDisaggCnt();
+		if(sList.size()!=sDCnt) {
+			return null;			
+		}else {
+			TaskFactory tFactory=Simulator.getSim().getTaskFactory();
+			List<TaskBean> sBeanList=tFactory.getBeanFromNode(sList);
+			TaskBean mBean=tFactory.mergeWorkBean(sBeanList);
+			AAL.a(pId+"子任务合并为父任务项"+mBean);
+			TaskNodeW2 mNode=tFactory.getNodeByBean(mBean);
+			mNode.setProgress(1);
+			return mNode;
+		}
+	}
+	
 }

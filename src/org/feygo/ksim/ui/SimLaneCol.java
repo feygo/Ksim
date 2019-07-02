@@ -74,17 +74,10 @@ public class SimLaneCol extends SimCol {
 		return laneId;
 	}
 	@Override
-	public void addTaskNode(TaskNodeW2 node) {
-		//判断 node的servietype
+	protected void addTaskNodeOnly(TaskNodeW2 node) {
 		String serviceType=node.getTaskBean().getServiceType();
 		String laneId=getLaneId(serviceType);
 		laneNodeMap.get(laneId).add(node);
-		if(node.getProgress()>=1) {
-			laneWorkDoneMap.get(laneId).add(node);
-		}
-		node.intoCol(conf.getId());
-		//执行拆分检查
-		checkDisagg(node);
 	}
 	@Override
 	protected void removeTaskNodeOnly(TaskNodeW2 node) {
