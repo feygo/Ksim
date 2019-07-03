@@ -1,18 +1,26 @@
 package org.feygo.ksim;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import org.feygo.ksim.tools.AAL;
 import org.feygo.ksim.ui.MainUI;
 
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Launcher extends Application {
 	
 	private static Stage primaryStage;
+	
+	public static Set<Stage> stages=new HashSet<Stage>();
 
 	public static void main(String[] args) {
 		launch(args);
@@ -38,6 +46,23 @@ public class Launcher extends Application {
 		stage.setHeight(600);
 		stage.setWidth(800);
 		stage.show();
+		
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			
+			@Override
+			public void handle(WindowEvent event) {
+				stages.forEach(new Consumer<Stage>() {
+					@Override
+					public void accept(Stage t) {
+						if(t!=null) {
+							AAL.a(t.getTitle()+" closed");
+							t.close();
+						}
+					}
+				});
+				AAL.a("PrimaryStage closed");
+			}
+		});
 	}
 	public static Stage getPrimaryStage() {
 		return primaryStage;

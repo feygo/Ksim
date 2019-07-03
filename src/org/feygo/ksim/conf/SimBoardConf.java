@@ -116,6 +116,20 @@ public class SimBoardConf {
 		// 计算col的流转过程
 		freshFlowPreColMap();
 		freshFlowNexColMap();
+		// 刷新colTille
+		freshColTitle();
+	}
+	private void freshColTitle() {
+		Cols.forEach(new BiConsumer<String, SimColConf>() {
+			@Override
+			public void accept(String colId, SimColConf conf) {
+				String preStr=ConfConstant.getColTypeStringByType(conf.getColType());
+				if(preStr!="") {
+					conf.setTitle("【"+preStr+"】"+conf.getTitle());	
+				}							
+			}
+			
+		});
 	}
 	/**
 	 * [tier,cols]

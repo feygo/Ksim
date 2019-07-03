@@ -176,7 +176,9 @@ public class SimCol extends ScrollPane {
 			public void accept(Node t) {
 				TaskNodeW2 node=(TaskNodeW2)t;
 				if(node.getProgress()<0.0) {
-					node.workStart();
+					if(isWorkerCol()) {
+						node.workStart();
+					}						
 				} 
 				//工作的节点。
 				TaskNodeW2 workDoneNode=null;
@@ -207,10 +209,18 @@ public class SimCol extends ScrollPane {
 				}
 				if(workDoneNode!=null) {
 					addToWorkDoneList(workDoneNode);
-					workDoneNode.workDone();
+					if(isWorkerCol()) {
+						workDoneNode.workDone();
+					}		
+					String lastColId=Simulator.getSim().getSimBoard().getSimBoardConf().getLastColId();
+					if(getId().equalsIgnoreCase(lastColId)) {
+						workDoneNode.outofCol();
+					}
 				}
+				
 			}
 		});
+		/** 删除合并子任务节点 **/
 		removeSubNode(pIdList);
 		changeNodeList.forEach(new Consumer<TaskNodeW2>() {
 			@Override
@@ -222,6 +232,7 @@ public class SimCol extends ScrollPane {
 		if(sendMessagePull()) {
 			messagePull();
 		}
+		
 	}
 	
 	protected boolean isWorkerCol() {

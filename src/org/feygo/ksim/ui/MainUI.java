@@ -6,6 +6,7 @@ import java.util.List;
 import org.feygo.ksim.Launcher;
 import org.feygo.ksim.conf.ConfLoader;
 import org.feygo.ksim.conf.SimBoardConf;
+import org.feygo.ksim.data.DataCenter;
 import org.feygo.ksim.data.ui.TaskFlowTable;
 import org.feygo.ksim.sim.Scheduler;
 import org.feygo.ksim.sim.Simulator;
@@ -146,15 +147,18 @@ public class MainUI extends BorderPane {
 		monitorDataButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				TaskFlowTable tfTable=new TaskFlowTable();
-				
+				TaskFlowTable tfTable=new TaskFlowTable();		
+				DataCenter.getDataCenter().setTaskFlowTable(tfTable);
 				Scene scene=new Scene(tfTable);
 				Stage monitorStage=new Stage();
 				monitorStage.setScene(scene);
 				//monitorStage.initOwner(Launcher.getPrimaryStage());
 				monitorStage.setTitle("Êý¾Ý¼à¿Ø´°¿Ú");
 				monitorStage.initModality(Modality.WINDOW_MODAL);
+				monitorStage.setWidth(1000);
+				monitorStage.setHeight(600);
 				monitorStage.show();
+				Launcher.stages.add(monitorStage);
 			}
 		});
 		hBox.getChildren().add(monitorDataButton);		

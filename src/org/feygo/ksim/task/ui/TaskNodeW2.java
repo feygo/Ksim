@@ -50,10 +50,10 @@ public class TaskNodeW2 extends BorderPane {
 	}
 	public void intoCol(String colId) {
 		taskBean.setCurColId(colId);
-		taskBean.setTmpStartTime(Simulator.getSim().getCurrentTime());
+		taskBean.setTmpStartTime(Simulator.getSim().getCurrentTime());		
 	}
 	public void outofCol() {
-		taskBean.setTmpDoneTime(Simulator.getSim().getCurrentTime());
+		taskBean.setTmpEndTime(Simulator.getSim().getCurrentTime());
 		//taskBean更新记录信息
 		taskBean.record();
 	}

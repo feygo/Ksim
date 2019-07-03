@@ -91,5 +91,16 @@ public class TaskRecord {
 		valueTime=workDoneTime-workStartTime;
 		nonValueTime=cycleTime-valueTime;
 	}
+
+	@Override
+	public String toString() {
+		StringBuffer sBuffer=new StringBuffer();
+		sBuffer.append(intoColTime).append("-");
+		sBuffer.append(workStartTime).append("-");
+		sBuffer.append(workDoneTime).append("-");
+		sBuffer.append(outofColTime);
+		sBuffer.append(" CT:").append(cycleTime);
+		return sBuffer.toString();
+	}
 	
 }
