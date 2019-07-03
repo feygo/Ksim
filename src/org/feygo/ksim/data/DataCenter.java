@@ -56,7 +56,9 @@ public class DataCenter {
 		Map<String, TaskRecord> cRecord=taskRecordMap.get(taskId);
 		String colId=record.getColId();
 		cRecord.put(colId, record);
-		AAL.a(taskRecordOL.toString());
-		tfTable.fresh();
+		//AAL.a(taskRecordOL.toString());
+		if(tfTable!=null) {
+			tfTable.fresh();
+		}		
 	}
 }

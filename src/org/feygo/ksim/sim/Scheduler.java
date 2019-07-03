@@ -8,7 +8,7 @@ import javafx.concurrent.Task;
 
 public class Scheduler extends ScheduledService<Number>{
 
-	int sum=0;
+	int sum=-1;
 	@Override
 	protected Task<Number> createTask() {
 		Task<Number> task=new Task<Number>() {
@@ -35,6 +35,7 @@ public class Scheduler extends ScheduledService<Number>{
 					AAL.a("前列均无任务项，仿真运行停止！");
 					Scheduler.this.cancel();
 					AAL.a("定时器状态："+Scheduler.this.getState());
+					// 当定时器停止时，进行数据持久化
 					sim.recordData();
 				};
 			}

@@ -99,7 +99,7 @@ public class TaskRecord {
 		sBuffer.append(workStartTime).append("-");
 		sBuffer.append(workDoneTime).append("-");
 		sBuffer.append(outofColTime);
-		sBuffer.append(" CT:").append(cycleTime);
+		sBuffer.append(" CT:").append(cycleTime);		
 		return sBuffer.toString();
 	}
 	

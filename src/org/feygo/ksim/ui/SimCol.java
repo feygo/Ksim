@@ -162,7 +162,7 @@ public class SimCol extends ScrollPane {
 		}
 	}
 
-
+	
 
 	/**
 	 * 工作，不被子类复写
@@ -170,6 +170,8 @@ public class SimCol extends ScrollPane {
 	public void work() {		
 		List<String> pIdList=new ArrayList<String>();
 		List<TaskNodeW2> changeNodeList=new ArrayList<TaskNodeW2>();
+		// 增量工作数量
+		int[] incCnt=new int[] {0};
 		// 给tasklist列上任务增加增量
 		getNodeList().forEach(new Consumer<Node>() {
 			@Override
@@ -186,6 +188,7 @@ public class SimCol extends ScrollPane {
 				if(isWorkerCol()) {
 					double inc=workInc(node);
 					double progress=node.increment(inc);
+					incCnt[0]=incCnt[0]+1;
 					if(node.getProgress()>=1.0) {
 						workDoneNode=node;
 					}
@@ -220,6 +223,9 @@ public class SimCol extends ScrollPane {
 				
 			}
 		});
+		if(incCnt[0]!=0) {
+			AAL.a("看板列" + conf.getId()+"为"+incCnt[0]+"个任务项添加增量！");
+		}
 		/** 删除合并子任务节点 **/
 		removeSubNode(pIdList);
 		changeNodeList.forEach(new Consumer<TaskNodeW2>() {
